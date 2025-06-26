@@ -8,12 +8,14 @@
   --secondary-color: #6c757d;  /* Cinza */
   --accent-color: #00bcd4;     /* Ciano */
   --text-color: #333;          /* Cinza escuro */
-  --border-radius: 12px;
-  --glass-effect: rgba(255, 255, 255, 0.6);
-  --shadow-light: rgba(0, 0, 0, 0.1);
-  --shadow-dark: rgba(0, 0, 0, 0.2);
+  --border-radius: 8px;       /* Bordas menos arredondadas */
+  --glass-effect: rgba(255, 255, 255, 0.4); /* Mais transparente */
+  --shadow-light: rgba(0, 0, 0, 0.2); /* Sombra mais marcada */
+  --shadow-dark: rgba(0, 0, 0, 0.4);  /* Sombra mais marcada */
   --y2k-pink: #ff00ff;
   --y2k-blue: #00ffff;
+  --frutiger-green: #00ff00; /* Nova cor para Frutiger Aero */
+  --frutiger-orange: #ffa500; /* Nova cor para Frutiger Aero */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,7 +26,7 @@
     --secondary-color: #adb5bd;
     --accent-color: #00e5ff;
     --text-color: #eee;
-    --glass-effect: rgba(0, 0, 0, 0.4);
+    --glass-effect: rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -55,7 +57,18 @@ body {
   backdrop-filter: blur(10px);
   border-radius: var(--border-radius);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 32px 0 var(--shadow-light);
+  box-shadow: 0 8px 32px 0 var(--shadow-dark);
+  transition: all 0.3s ease;
+}
+
+.glass-container:hover {
+  box-shadow: 0 12px 48px 0 var(--shadow-dark);
+}
+
+.glass-container-inner {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Botões com estilo Y2K */
@@ -63,18 +76,58 @@ body {
   background: linear-gradient(45deg, var(--y2k-pink), var(--y2k-blue));
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px; /* Bordas mais retas */
   padding: 10px 20px;
   font-family: 'Press Start 2P', cursive;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px var(--y2k-pink);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Brilho no texto */
 }
 
 .y2k-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px var(--y2k-blue);
+  filter: brightness(1.1);
+}
+
+.y2k-badge {
+  background: linear-gradient(90deg, var(--frutiger-green), var(--frutiger-orange));
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  border-radius: 4px;
+}
+
+.glass-message {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: var(--text-color);
+}
+
+.glass-input::placeholder {
+  color: rgba(var(--text-color), 0.7);
+}
+
+.glass-code-block {
+  background: rgba(0, 0, 0, 0.1); /* Fundo mais escuro para o código */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #00ff00; /* Cor de texto verde neon */
+  text-shadow: 0 0 5px #00ff00; /* Brilho neon */
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsividade básica */

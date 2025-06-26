@@ -77,12 +77,39 @@ class AIService {
   }
 
   // Gerar aplicação usando Gemini
-  async generateWithGemini(prompt) {
+  async generateWithGemini(prompt, stylePrompt = '', files = []) {
     if (!this.hasApiKey('gemini')) {
       throw new Error('Chave da API Gemini não configurada')
     }
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKeys.gemini}`, {
+    let systemPrompt = `Você é um assistente especializado em criar aplicações web funcionais. 
+    Quando o usuário descrever uma necessidade, você deve:
+    1. Criar uma aplicação HTML/CSS/JavaScript completa e funcional
+    2. Retornar APENAS um objeto JSON válido com o código da aplicação
+    3. A aplicação deve ser autocontida (HTML, CSS e JS em um único arquivo)
+    4. Incluir todos os estilos e funcionalidades necessárias
+    5. Usar design moderno e responsivo
+    
+    Formato de resposta esperado (JSON válido):
+    {
+      "name": "Nome da Aplicação",
+      "description": "Breve descrição",
+      "code": "<!DOCTYPE html>...",
+      "icon": "🔧"
+    }`
+
+    if (stylePrompt) {
+      systemPrompt += `\n\nConsidere também o seguinte prompt de estilo para a aplicação: ${stylePrompt}`
+    }
+
+    if (files.length > 0) {
+      systemPrompt += `\n\nO usuário também forneceu os seguintes arquivos como referência:\n`
+      files.forEach(file => {
+        systemPrompt += `Nome do arquivo: ${file.name}\nConteúdo: ${file.content}\n`
+      })
+    }
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${this.apiKeys.gemini}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -90,23 +117,10 @@ class AIService {
       body: JSON.stringify({
         contents: [{
           parts: [{
-            text: `Você é um assistente especializado em criar aplicações web funcionais. 
-            Quando o usuário descrever uma necessidade, você deve:
-            1. Criar uma aplicação HTML/CSS/JavaScript completa e funcional
-            2. Retornar APENAS um objeto JSON válido com o código da aplicação
-            3. A aplicação deve ser autocontida (HTML, CSS e JS em um único arquivo)
-            4. Incluir todos os estilos e funcionalidades necessárias
-            5. Usar design moderno e responsivo
-            
-            Formato de resposta esperado (JSON válido):
-            {
-              "name": "Nome da Aplicação",
-              "description": "Breve descrição",
-              "code": "<!DOCTYPE html>...",
-              "icon": "🔧"
-            }
-            
-            Solicitação do usuário: ${prompt}`
+            text: systemPrompt
+          },
+          {
+            text: `Solicitação do usuário: ${prompt}`
           }]
         }],
         generationConfig: {
@@ -159,17 +173,17 @@ class AIService {
   }
 
   // Gerar aplicação (método principal)
-  async generateApplication(prompt) {
+  async generateApplication(prompt, stylePrompt = '', files = []) {
     try {
       if (this.currentProvider === AI_PROVIDERS.DEEPSEEK && this.hasApiKey('deepseek')) {
         return await this.generateWithDeepSeek(prompt)
       } else if (this.currentProvider === AI_PROVIDERS.GEMINI && this.hasApiKey('gemini')) {
-        return await this.generateWithGemini(prompt)
+        return await this.generateWithGemini(prompt, stylePrompt, files)
       } else {
         // Fallback: tentar Gemini primeiro, depois DeepSeek
         if (this.hasApiKey('gemini')) {
           this.currentProvider = AI_PROVIDERS.GEMINI
-          return await this.generateWithGemini(prompt)
+          return await this.generateWithGemini(prompt, stylePrompt, files)
         } else if (this.hasApiKey('deepseek')) {
           this.currentProvider = AI_PROVIDERS.DEEPSEEK
           return await this.generateWithDeepSeek(prompt)
@@ -185,20 +199,7 @@ class AIService {
 
   // Corrigir aplicação existente
   async fixApplication(appCode, errorDescription) {
-    const prompt = `Corrija o seguinte código HTML/CSS/JavaScript baseado no erro reportado:
-
-ERRO REPORTADO: ${errorDescription}
-
-CÓDIGO ATUAL:
-${appCode}
-
-Por favor, retorne o código corrigido no mesmo formato JSON:
-{
-  "name": "Nome da Aplicação Corrigida",
-  "description": "Descrição da correção aplicada",
-  "code": "<!DOCTYPE html>...",
-  "icon": "🔧"
-}`
+    const prompt = `Corrija o seguinte código HTML/CSS/JavaScript baseado no erro reportado:\n\nERRO REPORTADO: ${errorDescription}\n\nCÓDIGO ATUAL:\n${appCode}\n\nPor favor, retorne o código corrigido no mesmo formato JSON:\n{\n  "name": "Nome da Aplicação Corrigida",\n  "description": "Descrição da correção aplicada",\n  "code": "<!DOCTYPE html>...",\n  "icon": "🔧"\n}`
 
     return await this.generateApplication(prompt)
   }

@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button.jsx'
 import { Input } from '@/components/ui/input.jsx'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.jsx'
 import { Textarea } from '@/components/ui/textarea.jsx'
 import { ScrollArea } from '@/components/ui/scroll-area.jsx'
 import { Badge } from '@/components/ui/badge.jsx'
-import { Send, Bot, User, Code, Settings, Trash2, Play, AlertTriangle } from 'lucide-react'
+import { Send, Bot, User, Code, Settings, Trash2, Play, AlertTriangle, Upload, Palette } from 'lucide-react'
 import ApiConfig from './components/ApiConfig.jsx'
 import aiService from './services/aiService.js'
 import './App.css'
 
 function App() {
   const [message, setMessage] = useState('')
+  const [stylePrompt, setStylePrompt] = useState('')
+  const [attachedFiles, setAttachedFiles] = useState([])
   const [chatHistory, setChatHistory] = useState([])
   const [generatedApps, setGeneratedApps] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -19,6 +21,8 @@ function App() {
   const [showApiConfig, setShowApiConfig] = useState(false)
   const [errorReport, setErrorReport] = useState('')
   const [isReporting, setIsReporting] = useState(false)
+
+  const fileInputRef = useRef(null)
 
   // Carregar aplicações do localStorage
   useEffect(() => {
@@ -55,8 +59,8 @@ function App() {
     setIsLoading(true)
 
     try {
-      // Usar o serviço de IA real
-      const aiResponse = await aiService.generateApplication(message)
+      // Usar o serviço de IA real, passando o prompt de estilo e arquivos
+      const aiResponse = await aiService.generateApplication(message, stylePrompt, attachedFiles)
       
       const aiMessage = { 
         type: 'ai', 
@@ -89,6 +93,8 @@ function App() {
     } finally {
       setIsLoading(false)
       setMessage('')
+      setStylePrompt('')
+      setAttachedFiles([])
     }
   }
 
@@ -113,6 +119,30 @@ function App() {
     newWindow.document.close()
   }
 
+  const handleFileChange = (event) => {
+    const files = Array.from(event.target.files)
+    const filePromises = files.map(file => {
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          resolve({
+            name: file.name,
+            content: e.target.result
+          })
+        }
+        reader.readAsText(file)
+      })
+    })
+
+    Promise.all(filePromises).then(newFiles => {
+      setAttachedFiles(prev => [...prev, ...newFiles])
+    })
+  }
+
+  const removeAttachedFile = (fileName) => {
+    setAttachedFiles(prev => prev.filter(file => file.name !== fileName))
+  }
+
   const reportError = async () => {
     if (!errorReport.trim() || !selectedApp) return
 
@@ -132,7 +162,7 @@ function App() {
       // Adicionar mensagem no chat
       setChatHistory(prev => [...prev, {
         type: 'ai',
-        content: `Aplicação "${selectedApp.name}" foi corrigida baseada no erro reportado: "${errorReport}"`,
+        content: `Aplicação "${selectedApp.name}" foi corrigida baseada no erro reportado: "${errorReport}"`, 
         timestamp: new Date()
       }])
       
@@ -235,8 +265,8 @@ function App() {
                   )}
                 </ScrollArea>
 
-                {/* Message Input */}
-                <div className="flex gap-2">
+                {/* Message Input and Style Prompt */}
+                <div className="flex flex-col gap-2">
                   <Textarea
                     placeholder="Descreva a aplicação que você quer criar..."
                     value={message}
@@ -245,14 +275,54 @@ function App() {
                     className="resize-none glass-input"
                     rows={2}
                   />
-                  <Button 
-                    onClick={handleSendMessage} 
-                    disabled={!message.trim() || isLoading}
-                    size="icon"
-                    className="self-end y2k-button"
-                  >
-                    <Send className="w-4 h-4" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Textarea
+                      placeholder="Prompt de estilo (ex: 'cores vibrantes, elementos 3D, bolhas')"
+                      value={stylePrompt}
+                      onChange={(e) => setStylePrompt(e.target.value)}
+                      className="resize-none glass-input flex-1"
+                      rows={1}
+                    />
+                    <Button 
+                      onClick={() => fileInputRef.current.click()} 
+                      size="icon"
+                      variant="outline"
+                      className="y2k-button"
+                      title="Anexar Arquivos"
+                    >
+                      <Upload className="w-4 h-4" />
+                    </Button>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                      multiple
+                      className="hidden"
+                    />
+                    <Button 
+                      onClick={handleSendMessage} 
+                      disabled={!message.trim() || isLoading}
+                      size="icon"
+                      className="y2k-button"
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  {attachedFiles.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {attachedFiles.map((file, index) => (
+                        <Badge key={index} variant="secondary" className="y2k-badge flex items-center gap-1">
+                          {file.name}
+                          <button 
+                            onClick={() => removeAttachedFile(file.name)}
+                            className="ml-1 text-xs text-white hover:text-red-300"
+                          >
+                            x
+                          </button>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
