@@ -148,56 +148,51 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-4 max-w-7xl">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="container mx-auto p-4 max-w-7xl glass-container">
         {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between">
-            <div className="text-center flex-1">
-              <h1 className="text-3xl font-bold mb-2">Gerador de Algoritmos com IA</h1>
-              <p className="text-muted-foreground">
-                Descreva o que você precisa e a IA criará uma aplicação personalizada para você
-              </p>
-            </div>
-            <Button 
-              variant="outline" 
-              size="icon"
-              onClick={() => setShowApiConfig(true)}
-              title="Configurações de API"
-            >
-              <Settings className="w-4 h-4" />
-            </Button>
-          </div>
+        <div className="mb-6 text-center">
+          <h1 className="text-4xl font-bold mb-2 text-primary">Gerador de Algoritmos com IA</h1>
+          <p className="text-lg text-secondary-foreground">
+            Descreva o que você precisa e a IA criará uma aplicação personalizada para você
+          </p>
+          <Button 
+            className="mt-4 y2k-button"
+            onClick={() => setShowApiConfig(true)}
+          >
+            <Settings className="w-5 h-5 mr-2" />
+            Configurações de API
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Chat Area */}
           <div className="lg:col-span-2">
-            <Card className="h-[600px] flex flex-col">
+            <Card className="h-[600px] flex flex-col glass-container">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-primary">
                   <Bot className="w-5 h-5" />
                   Chat com IA
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-xs y2k-badge">
                     {aiService.getCurrentProvider() === 'deepseek' ? 'DeepSeek' : 'Gemini'}
                   </Badge>
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-secondary-foreground">
                   Descreva a aplicação que você gostaria de criar
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col">
                 {/* Chat Messages */}
-                <ScrollArea className="flex-1 mb-4 p-4 border rounded-lg">
+                <ScrollArea className="flex-1 mb-4 p-4 border rounded-lg glass-container-inner">
                   {chatHistory.length === 0 ? (
                     <div className="text-center text-muted-foreground py-8">
                       <Bot className="w-12 h-12 mx-auto mb-4 opacity-50" />
                       <p>Olá! Descreva a aplicação que você gostaria que eu criasse para você.</p>
                       <p className="text-sm mt-2">Exemplo: "Quero um formatador automático de referências nas normas ABNT"</p>
                       {!aiService.hasApiKey('deepseek') && !aiService.hasApiKey('gemini') && (
-                        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                          <AlertTriangle className="w-5 h-5 mx-auto mb-2 text-yellow-600" />
-                          <p className="text-sm text-yellow-800">
+                        <div className="mt-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg text-yellow-800">
+                          <AlertTriangle className="w-5 h-5 mx-auto mb-2" />
+                          <p className="text-sm">
                             Configure uma chave de API para começar a usar o serviço
                           </p>
                         </div>
@@ -209,14 +204,14 @@ function App() {
                         <div key={index} className={`flex gap-3 ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                           <div className={`flex gap-3 max-w-[80%] ${msg.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                              msg.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'
+                              msg.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
                             }`}>
                               {msg.type === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                             </div>
-                            <div className={`p-3 rounded-lg ${
+                            <div className={`p-3 rounded-lg glass-message ${
                               msg.type === 'user' 
                                 ? 'bg-primary text-primary-foreground' 
-                                : 'bg-secondary'
+                                : 'bg-secondary text-secondary-foreground'
                             }`}>
                               <p className="text-sm">{msg.content}</p>
                               <p className="text-xs opacity-70 mt-1">
@@ -231,7 +226,7 @@ function App() {
                           <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
                             <Bot className="w-4 h-4" />
                           </div>
-                          <div className="bg-secondary p-3 rounded-lg">
+                          <div className="bg-secondary p-3 rounded-lg glass-message">
                             <p className="text-sm">Gerando sua aplicação...</p>
                           </div>
                         </div>
@@ -247,14 +242,14 @@ function App() {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    className="resize-none"
+                    className="resize-none glass-input"
                     rows={2}
                   />
                   <Button 
                     onClick={handleSendMessage} 
                     disabled={!message.trim() || isLoading}
                     size="icon"
-                    className="self-end"
+                    className="self-end y2k-button"
                   >
                     <Send className="w-4 h-4" />
                   </Button>
@@ -265,13 +260,13 @@ function App() {
 
           {/* Generated Apps Sidebar */}
           <div>
-            <Card className="h-[600px] flex flex-col">
+            <Card className="h-[600px] flex flex-col glass-container">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-primary">
                   <Code className="w-5 h-5" />
                   Aplicações Geradas
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-secondary-foreground">
                   {generatedApps.length} aplicação(ões) criada(s)
                 </CardDescription>
               </CardHeader>
@@ -288,7 +283,7 @@ function App() {
                       {generatedApps.map((app) => (
                         <Card 
                           key={app.id} 
-                          className={`cursor-pointer transition-colors hover:bg-accent ${
+                          className={`cursor-pointer transition-colors hover:bg-accent glass-card ${
                             selectedApp?.id === app.id ? 'ring-2 ring-primary' : ''
                           }`}
                           onClick={() => setSelectedApp(app)}
@@ -298,12 +293,12 @@ function App() {
                               <div className="flex items-center gap-3 flex-1">
                                 <span className="text-2xl">{app.icon}</span>
                                 <div className="flex-1 min-w-0">
-                                  <h3 className="font-medium text-sm truncate">{app.name}</h3>
+                                  <h3 className="font-medium text-sm truncate text-primary">{app.name}</h3>
                                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                                     {app.description}
                                   </p>
-                                  <Badge variant="secondary" className="mt-2 text-xs">
-                                    {app.createdAt.toLocaleDateString()}
+                                  <Badge variant="secondary" className="mt-2 text-xs y2k-badge">
+                                    {new Date(app.createdAt).toLocaleDateString()}
                                   </Badge>
                                 </div>
                               </div>
@@ -332,44 +327,46 @@ function App() {
 
         {/* Selected App Details */}
         {selectedApp && (
-          <Card className="mt-6">
+          <Card className="mt-6 glass-container">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-primary">
                 <span className="text-2xl">{selectedApp.icon}</span>
                 {selectedApp.name}
               </CardTitle>
-              <CardDescription>{selectedApp.description}</CardDescription>
+              <CardDescription className="text-secondary-foreground">{selectedApp.description}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-medium mb-2">Código Gerado:</h4>
-                  <pre className="bg-secondary p-4 rounded-lg text-sm overflow-x-auto max-h-60">
+                  <h4 className="font-medium mb-2 text-primary">Código Gerado:</h4>
+                  <pre className="bg-secondary p-4 rounded-lg text-sm overflow-x-auto max-h-60 glass-code-block">
                     <code>{selectedApp.code}</code>
                   </pre>
                 </div>
                 
                 <div className="flex gap-2">
-                  <Button onClick={() => executeApp(selectedApp)}>
+                  <Button onClick={() => executeApp(selectedApp)} className="y2k-button">
                     <Play className="w-4 h-4 mr-2" />
                     Executar Aplicação
                   </Button>
                 </div>
 
                 {/* Error Reporting */}
-                <div className="border-t pt-4">
-                  <h4 className="font-medium mb-2">Reportar Erro</h4>
+                <div className="border-t pt-4 border-gray-300">
+                  <h4 className="font-medium mb-2 text-primary">Reportar Erro</h4>
                   <div className="space-y-2">
                     <Textarea
                       placeholder="Descreva o erro ou problema encontrado na aplicação..."
                       value={errorReport}
                       onChange={(e) => setErrorReport(e.target.value)}
                       rows={3}
+                      className="glass-input"
                     />
                     <Button 
                       variant="outline" 
                       onClick={reportError}
                       disabled={!errorReport.trim() || isReporting}
+                      className="y2k-button"
                     >
                       <AlertTriangle className="w-4 h-4 mr-2" />
                       {isReporting ? 'Corrigindo...' : 'Reportar e Corrigir'}

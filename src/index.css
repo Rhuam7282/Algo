@@ -1,0 +1,92 @@
+/* Estilos base para Frutiger Aero e Y2K */
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Press+Start+2P&display=swap");
+
+:root {
+  --background-start: #e0f2f7; /* Azul claro */
+  --background-end: #c8e6f0;   /* Azul um pouco mais escuro */
+  --primary-color: #007bff;    /* Azul vibrante */
+  --secondary-color: #6c757d;  /* Cinza */
+  --accent-color: #00bcd4;     /* Ciano */
+  --text-color: #333;          /* Cinza escuro */
+  --border-radius: 12px;
+  --glass-effect: rgba(255, 255, 255, 0.6);
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-dark: rgba(0, 0, 0, 0.2);
+  --y2k-pink: #ff00ff;
+  --y2k-blue: #00ffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-start: #1a2a3a;
+    --background-end: #2a3a4a;
+    --primary-color: #66b3ff;
+    --secondary-color: #adb5bd;
+    --accent-color: #00e5ff;
+    --text-color: #eee;
+    --glass-effect: rgba(0, 0, 0, 0.4);
+  }
+}
+
+body {
+  font-family: 'Orbitron', sans-serif;
+  background: linear-gradient(135deg, var(--background-start), var(--background-end));
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Efeitos de vidro (glassmorphism) */
+.glass-container {
+  background: var(--glass-effect);
+  backdrop-filter: blur(10px);
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 var(--shadow-light);
+}
+
+/* Botões com estilo Y2K */
+.y2k-button {
+  background: linear-gradient(45deg, var(--y2k-pink), var(--y2k-blue));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', cursive;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px var(--y2k-pink);
+}
+
+.y2k-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--y2k-blue);
+}
+
+/* Responsividade básica */
+@media (max-width: 768px) {
+  #root {
+    padding: 10px;
+  }
+
+  .y2k-button {
+    padding: 8px 15px;
+    font-size: 0.8em;
+  }
+}
+
+

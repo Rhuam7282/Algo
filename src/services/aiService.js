@@ -82,7 +82,7 @@ class AIService {
       throw new Error('Chave da API Gemini não configurada')
     }
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${this.apiKeys.gemini}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKeys.gemini}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
